@@ -46,8 +46,10 @@ public class PlanetControler
     public Planet listByName(@PathVariable(name = "name") String name) {
         return this.planetService.listByName(name);
     }
+
     
     //Verifica se campos de nome, clima e terreno foram enviados e retorna mensagem de erro correspondente caso ocorram.
+    //Verifica se um planeta com mesmo nome já foi cadastrado e retorna mensagem alertando.
     //Chama método para calcular quantidade de filmes e define o campo correspondente.
     @PostMapping
     public ResponseEntity<Response<Planet>> addPlanet(@Valid @RequestBody Planet planet, BindingResult bindingResult) {
@@ -56,6 +58,11 @@ public class PlanetControler
             bindingResult.getAllErrors().forEach(error -> errors.add(error.getDefaultMessage()));
             return ResponseEntity.badRequest().body(new Response<Planet>(errors));
 
+        }
+        if (this.planetService.listByName(planet.getName()) != null) {
+        	List<String> errors = new ArrayList<String>();
+			errors.add("A planet with this name already exists");
+			return ResponseEntity.badRequest().body(new Response<Planet>(errors));
         }
         Integer movieAppearances = this.getTotalMovieAppearances(planet);
         planet.setMovieAppearances(movieAppearances);
