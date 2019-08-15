@@ -37,14 +37,33 @@ public class PlanetControler
         return (ResponseEntity<List<Planet>>)ResponseEntity.ok(this.planetService.listAll());
     }
     
+//    @GetMapping(path = { "/id/{id}" })
+//    public Optional<Planet> listById(@PathVariable(name = "id") String id) {
+//        return (Optional<Planet>)this.planetService.listById(id);
+//    }
     @GetMapping(path = { "/id/{id}" })
-    public Optional<Planet> listById(@PathVariable(name = "id") String id) {
-        return (Optional<Planet>)this.planetService.listById(id);
+    public ResponseEntity<Response<Planet>> listById(@PathVariable(name = "id") String id) {
+    	if (this.planetService.listById(id) == null) {
+        	List<String> errors = new ArrayList<String>();
+			errors.add("This planet does not exist");
+			return ResponseEntity.badRequest().body(new Response<Planet>(errors));
+        }
+    	return ResponseEntity.ok(new Response<Planet>(this.planetService.listById(id)));
     }
     
+//    @GetMapping(path = { "/name/{name}" })
+//    public Planet listByName(@PathVariable(name = "name") String name) {
+//        return this.planetService.listByName(name);
+//    }
+    
     @GetMapping(path = { "/name/{name}" })
-    public Planet listByName(@PathVariable(name = "name") String name) {
-        return this.planetService.listByName(name);
+    public ResponseEntity<Response<Planet>> listByName(@PathVariable(name = "name") String name) {
+    	if (this.planetService.listByName(name) == null) {
+        	List<String> errors = new ArrayList<String>();
+			errors.add("This planet does not exist");
+			return ResponseEntity.badRequest().body(new Response<Planet>(errors));
+        }
+    	return ResponseEntity.ok(new Response<Planet>(this.planetService.listByName(name)));
     }
 
     
@@ -57,7 +76,6 @@ public class PlanetControler
             List<String> errors = new ArrayList<String>();
             bindingResult.getAllErrors().forEach(error -> errors.add(error.getDefaultMessage()));
             return ResponseEntity.badRequest().body(new Response<Planet>(errors));
-
         }
         if (this.planetService.listByName(planet.getName()) != null) {
         	List<String> errors = new ArrayList<String>();
@@ -70,8 +88,13 @@ public class PlanetControler
     }
     
     @DeleteMapping(path = { "/id/{id}" })
-    public Optional<Planet> removePlanetById(@PathVariable(name = "id") String id) {
-        return (Optional<Planet>)this.planetService.removePlanet(id);
+    public ResponseEntity<Response<Planet>> removePlanetById(@PathVariable(name = "id") String id) {
+    	if (this.planetService.listById(id) == null) {
+        	List<String> errors = new ArrayList<String>();
+			errors.add("This planet does not exist");
+			return ResponseEntity.badRequest().body(new Response<Planet>(errors));
+        }
+    	return ResponseEntity.ok(new Response<Planet>(this.planetService.removePlanet(id)));
     }
     
     //Realiza busca na api swapi para descobrir o total de filmes correspondente ao nome do planeta.
