@@ -14,7 +14,6 @@ import com.dtamaki.swplanetapi.responses.Response;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import javax.validation.Valid;
-import java.util.Optional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 import com.dtamaki.swplanetapi.documents.Planet;
@@ -37,12 +36,9 @@ public class PlanetControler
         return (ResponseEntity<List<Planet>>)ResponseEntity.ok(this.planetService.listAll());
     }
     
-//    @GetMapping(path = { "/id/{id}" })
-//    public Optional<Planet> listById(@PathVariable(name = "id") String id) {
-//        return (Optional<Planet>)this.planetService.listById(id);
-//    }
     @GetMapping(path = { "/id/{id}" })
     public ResponseEntity<Response<Planet>> listById(@PathVariable(name = "id") String id) {
+    	System.out.println(this.planetService.listById(id));
     	if (this.planetService.listById(id) == null) {
         	List<String> errors = new ArrayList<String>();
 			errors.add("This planet does not exist");
@@ -51,10 +47,6 @@ public class PlanetControler
     	return ResponseEntity.ok(new Response<Planet>(this.planetService.listById(id)));
     }
     
-//    @GetMapping(path = { "/name/{name}" })
-//    public Planet listByName(@PathVariable(name = "name") String name) {
-//        return this.planetService.listByName(name);
-//    }
     
     @GetMapping(path = { "/name/{name}" })
     public ResponseEntity<Response<Planet>> listByName(@PathVariable(name = "name") String name) {

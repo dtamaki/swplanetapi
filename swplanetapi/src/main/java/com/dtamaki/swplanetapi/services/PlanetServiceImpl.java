@@ -3,6 +3,8 @@ package com.dtamaki.swplanetapi.services;
 
 import com.dtamaki.swplanetapi.documents.Planet;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import com.dtamaki.swplanetapi.repositories.PlanetRepository;
 import org.springframework.stereotype.Service;
@@ -25,16 +27,17 @@ public class PlanetServiceImpl implements PlanetService
         return (Planet)this.planetRepository.save(planet);
     }
 
-	@Override
-	public Planet listById(String id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Planet listById(String id) {
+    	Optional<Planet> planet = (Optional<Planet>)this.planetRepository.findById(id);
+        return planet.get();
+    }
 
 	@Override
 	public Planet removePlanet(String id) {
-		// TODO Auto-generated method stub
-		return null;
+        Optional<Planet> planet = (Optional<Planet>)this.planetRepository.findById(id);
+        planet.ifPresent(b -> this.planetRepository.delete(b));
+        return planet.get();
+
 	}
     
 }

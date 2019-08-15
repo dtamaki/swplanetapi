@@ -45,12 +45,12 @@ public class SwplanetapiApplicationTests {
 				.content("{\"name\": \"Hoth\", \"climate\":\"Frozen\", \"terrain\":\"snow\"}")
 				.contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.errors", nullValue()));
-		
+
 		mockMvc.perform(post("/swplanetapi/planets")
 				.content("{\"name\": \"Mustafar\", \"climate\":\"Hot\", \"terrain\":\"lava\"}")
 				.contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.errors", nullValue()));
-		
+
 		MvcResult mvcResult = mockMvc.perform(get("/swplanetapi/planets")).andDo(print()).andExpect(status().isOk())
 				.andReturn();
 		String result = mvcResult.getResponse().getContentAsString();
@@ -99,7 +99,19 @@ public class SwplanetapiApplicationTests {
 				.andExpect(jsonPath("$.errors", nullValue()));
 
 		mockMvc.perform(get("/swplanetapi/planets/name/{name}", "Hoth")).andExpect(status().isOk())
-				.andExpect(jsonPath("$.name").value("Hoth"));
+				.andExpect(jsonPath("$.errors", nullValue()));
+	}
+
+	@Test
+	public void shouldNotFindPlanetNoName() throws Exception {
+
+		mockMvc.perform(post("/swplanetapi/planets")
+				.content("{\"name\": \"Hoth\", \"climate\":\"Frozen\", \"terrain\":\"snow\"}")
+				.contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.errors", nullValue()));
+
+		mockMvc.perform(get("/swplanetapi/planets/name/{name}", "Mustafar")).andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.errors").value("This planet does not exist"));
 	}
 
 	@Test
@@ -113,9 +125,8 @@ public class SwplanetapiApplicationTests {
 		String mvcBodyResult = mvcResult.getResponse().getContentAsString();
 		Integer resultIdpos = mvcBodyResult.indexOf("id\":\"");
 		String id = mvcBodyResult.substring(resultIdpos + 5, resultIdpos + 29);
-
 		mockMvc.perform(get("/swplanetapi/planets/id/{id}", id)).andExpect(status().isOk())
-				.andExpect(jsonPath("$.id").value(id));
+				.andExpect(jsonPath("$.errors", nullValue()));
 	}
 
 	@Test
@@ -129,9 +140,8 @@ public class SwplanetapiApplicationTests {
 		String mvcBodyResult = mvcResult.getResponse().getContentAsString();
 		Integer resultIdpos = mvcBodyResult.indexOf("id\":\"");
 		String id = mvcBodyResult.substring(resultIdpos + 5, resultIdpos + 29);
-
 		mockMvc.perform(delete("/swplanetapi/planets/id/{id}", id)).andExpect(status().isOk())
-				.andExpect(jsonPath("$.id").value(id));
+				.andExpect(jsonPath("$.errors", nullValue()));
 	}
-	
+
 }
